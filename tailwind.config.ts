@@ -61,6 +61,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// DSTAT Dashboard colors
+				dashboard: {
+					blue: '#3B82F6',
+					green: '#10B981', 
+					red: '#F59E0B',
+					gray: '#1F2937',
+					'light-gray': '#F9FAFB'
 				}
 			},
 			borderRadius: {
