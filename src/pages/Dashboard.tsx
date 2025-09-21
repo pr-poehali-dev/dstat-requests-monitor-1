@@ -34,7 +34,7 @@ export default function Dashboard() {
   const fetchMetrics = async () => {
     setIsRefreshing(true);
     try {
-      const response = await fetch('https://functions.poehali.dev/1b509fc0-bf5a-490c-aec0-c8eb95bc7090?type=rps');
+      const response = await fetch('https://functions.poehali.dev/be94a607-5447-4e54-9fe8-18b632b70bed');
       if (response.ok) {
         const data = await response.json();
         setMetricsData(data);

@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "Get metrics data",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "type": "string",
+        "data": "array",
+        "metrics": "object"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
