@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Navigation from '@/components/dashboard/Navigation';
 import MetricsCard from '@/components/dashboard/MetricsCard';
 import LiveChart from '@/components/dashboard/LiveChart';
+import RealTimeTracker from '@/components/analytics/RealTimeTracker';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 
@@ -34,7 +35,7 @@ export default function Dashboard() {
   const fetchMetrics = async () => {
     setIsRefreshing(true);
     try {
-      const response = await fetch('https://functions.poehali.dev/be94a607-5447-4e54-9fe8-18b632b70bed');
+      const response = await fetch('https://functions.poehali.dev/b4a8335f-97d5-40b2-8822-bbd82fb1cb22');
       if (response.ok) {
         const data = await response.json();
         setMetricsData(data);
@@ -57,8 +58,8 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-          <p className="text-gray-500 mt-1">Мониторинг производительности в реальном времени</p>
+          <h1 className="text-3xl font-bold text-gray-900">Real Analytics Dashboard</h1>
+          <p className="text-gray-500 mt-1">Реальная аналитика сайта на основе настоящих посещений</p>
         </div>
         <Button 
           onClick={fetchMetrics} 
@@ -188,6 +189,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 flex">
+      <RealTimeTracker />
       <Navigation activeSection={activeSection} onSectionChange={setActiveSection} />
       <main className="flex-1 p-6 overflow-auto">
         {renderSection()}

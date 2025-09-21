@@ -1,0 +1,33 @@
+{
+  "tests": [
+    {
+      "name": "Get real analytics data",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "type": "string",
+        "data": "array",
+        "metrics": "object",
+        "source": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Track page view",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "page": "/dashboard",
+        "referrer": "https://google.com",
+        "load_time": 1200
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "status": "string",
+        "timestamp": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
