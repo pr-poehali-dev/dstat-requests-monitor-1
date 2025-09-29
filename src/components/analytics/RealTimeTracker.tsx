@@ -6,12 +6,20 @@ interface RealTimeTrackerProps {
 
 export default function RealTimeTracker({ onPageView }: RealTimeTrackerProps) {
   useEffect(() => {
+    // Generate or get session ID
+    let sessionId = sessionStorage.getItem('analytics_session_id');
+    if (!sessionId) {
+      sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      sessionStorage.setItem('analytics_session_id', sessionId);
+    }
+
     const trackPageView = async () => {
       try {
         const pageData = {
           page: window.location.pathname,
           referrer: document.referrer,
-          load_time: performance.now(),
+          load_time: Math.round(performance.now()),
+          session_id: sessionId,
           timestamp: new Date().toISOString(),
           screen_resolution: `${screen.width}x${screen.height}`,
           user_agent: navigator.userAgent
@@ -49,7 +57,8 @@ export default function RealTimeTracker({ onPageView }: RealTimeTrackerProps) {
         JSON.stringify({
           page: window.location.pathname,
           event: 'page_exit',
-          session_time: performance.now()
+          session_id: sessionId,
+          session_time: Math.round(performance.now())
         })
       );
     };
