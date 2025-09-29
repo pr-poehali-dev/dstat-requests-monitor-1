@@ -57,9 +57,15 @@ export default function Dashboard() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Real Analytics Dashboard</h1>
-          <p className="text-gray-500 mt-1">Реальная аналитика сайта на основе настоящих посещений</p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Real Analytics Dashboard</h1>
+            <p className="text-gray-500 mt-1">Реальная аналитика сайта на основе настоящих посещений</p>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-semibold text-red-600">LIVE</span>
+          </div>
         </div>
         <Button 
           onClick={fetchMetrics} 
