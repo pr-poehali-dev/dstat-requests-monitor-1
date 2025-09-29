@@ -52,7 +52,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchMetrics();
-    const interval = setInterval(fetchMetrics, 1000); // Refresh every 1 second
+    const interval = setInterval(fetchMetrics, 2000); // Refresh every 2 seconds
     return () => clearInterval(interval);
   }, []);
 

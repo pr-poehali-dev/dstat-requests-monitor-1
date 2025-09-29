@@ -23,9 +23,12 @@ export default function LiveChart({
   const [animatedData, setAnimatedData] = useState<DataPoint[]>([]);
 
   useEffect(() => {
-    setAnimatedData([]);
-    const timer = setTimeout(() => setAnimatedData(data), 100);
-    return () => clearTimeout(timer);
+    if (animatedData.length === 0) {
+      setAnimatedData(data);
+    } else {
+      const timer = setTimeout(() => setAnimatedData(data), 50);
+      return () => clearTimeout(timer);
+    }
   }, [data]);
 
   const maxValue = Math.max(...data.map(d => d.value));
@@ -34,15 +37,34 @@ export default function LiveChart({
 
   const generatePath = (points: DataPoint[]) => {
     if (points.length === 0) return '';
+    if (points.length === 1) {
+      const y = 100 - ((points[0].value - minValue) / range) * 80;
+      return `M 0 ${y} L 100 ${y}`;
+    }
     
     const width = 100;
-    const stepX = width / (points.length - 1 || 1);
+    const stepX = width / (points.length - 1);
     
-    return points.map((point, index) => {
+    const pathPoints = points.map((point, index) => {
       const x = index * stepX;
-      const y = 100 - ((point.value - minValue) / range) * 80; // Leave 20% padding
-      return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-    }).join(' ');
+      const y = 100 - ((point.value - minValue) / range) * 80;
+      return { x, y };
+    });
+    
+    let path = `M ${pathPoints[0].x} ${pathPoints[0].y}`;
+    
+    for (let i = 0; i < pathPoints.length - 1; i++) {
+      const current = pathPoints[i];
+      const next = pathPoints[i + 1];
+      const controlX1 = current.x + (next.x - current.x) / 3;
+      const controlY1 = current.y;
+      const controlX2 = current.x + 2 * (next.x - current.x) / 3;
+      const controlY2 = next.y;
+      
+      path += ` C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${next.x} ${next.y}`;
+    }
+    
+    return path;
   };
 
   const path = generatePath(animatedData);
@@ -94,7 +116,7 @@ export default function LiveChart({
               <path
                 d={areaPath}
                 fill="url(#areaGradient)"
-                className="transition-all duration-1000 ease-out"
+                style={{ transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}
               />
             )}
             
@@ -105,38 +127,42 @@ export default function LiveChart({
                 fill="none"
                 stroke={color}
                 strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
-                className="transition-all duration-1000 ease-out"
+                style={{ transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}
               />
             )}
             
-            {/* Data points */}
-            {animatedData.map((point, index) => {
-              const x = (index / (animatedData.length - 1 || 1)) * 100;
-              const y = 100 - ((point.value - minValue) / range) * 80;
+            {/* Data point - only last one */}
+            {animatedData.length > 0 && (() => {
+              const lastPoint = animatedData[animatedData.length - 1];
+              const x = 100;
+              const y = 100 - ((lastPoint.value - minValue) / range) * 80;
               
               return (
-                <g key={index}>
+                <g>
                   <circle
                     cx={x}
                     cy={y}
-                    r="1"
+                    r="2"
                     fill={color}
-                    className="transition-all duration-1000 ease-out"
+                    style={{ transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}
                     vectorEffect="non-scaling-stroke"
                   />
                   <circle
                     cx={x}
                     cy={y}
-                    r="3"
+                    r="4"
                     fill={color}
-                    fillOpacity="0.3"
-                    className="transition-all duration-1000 ease-out animate-pulse"
+                    fillOpacity="0.4"
+                    style={{ transition: 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)' }}
+                    className="animate-pulse"
                     vectorEffect="non-scaling-stroke"
                   />
                 </g>
               );
-            })}
+            })()}
           </svg>
           
           {/* Y-axis labels */}
