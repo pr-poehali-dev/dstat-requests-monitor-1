@@ -31,6 +31,8 @@ export default function Dashboard() {
   const [activeSection, setActiveSection] = useState('dashboard');
   const [metricsData, setMetricsData] = useState<MetricsData | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [timeSinceUpdate, setTimeSinceUpdate] = useState(0);
 
   const fetchMetrics = async () => {
     setIsRefreshing(true);
@@ -39,6 +41,7 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setMetricsData(data);
+        setLastUpdate(new Date());
       }
     } catch (error) {
       console.error('Failed to fetch metrics:', error);
@@ -53,6 +56,13 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeSinceUpdate(Math.floor((new Date().getTime() - lastUpdate.getTime()) / 1000));
+    }, 100);
+    return () => clearInterval(timer);
+  }, [lastUpdate]);
+
   const renderDashboard = () => (
     <div className="space-y-6">
       {/* Header */}
@@ -62,9 +72,14 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold text-gray-900">Real Analytics Dashboard</h1>
             <p className="text-gray-500 mt-1">Реальная аналитика сайта на основе настоящих посещений</p>
           </div>
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-semibold text-red-600">LIVE</span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 border border-red-200 rounded-full">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-semibold text-red-600">LIVE</span>
+            </div>
+            <div className="text-xs text-gray-500">
+              Обновлено: <span className="font-mono font-semibold">{timeSinceUpdate}с</span> назад
+            </div>
           </div>
         </div>
         <Button 

@@ -70,7 +70,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Since we don't have real database, simulate based on actual request patterns
         # In production, this would query your analytics database
         
-        # Generate data points for last 30 minutes based on current time
+        # Generate data points for last 30 seconds based on current time
         data_points = []
         
         # Create more realistic pattern - lower at night, higher during day
@@ -87,23 +87,24 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             base_multiplier = 0.3
         
         for i in range(30):
-            timestamp = current_time - timedelta(minutes=29-i)
+            timestamp = current_time - timedelta(seconds=29-i)
             
-            # More realistic traffic pattern
-            base_rps = max(1, int(15 * base_multiplier))  # Much lower realistic numbers
-            variance = max(0, base_rps + int((hash(timestamp.minute) % 11) - 5))
+            # Add randomness based on current microsecond for real-time variation
+            seed = timestamp.microsecond + current_time.microsecond
+            base_rps = max(1, int(15 * base_multiplier))
+            variance = max(0, base_rps + int((seed % 11) - 5))
             
             data_points.append({
                 'timestamp': timestamp.isoformat(),
                 'value': variance,
-                'label': timestamp.strftime('%H:%M')
+                'label': timestamp.strftime('%H:%M:%S')
             })
         
         # Calculate realistic metrics
         current_rps = data_points[-1]['value']
         avg_rps = sum(point['value'] for point in data_points) // len(data_points)
         peak_rps = max(point['value'] for point in data_points)
-        total_requests = sum(point['value'] for point in data_points) * 60
+        total_requests = sum(point['value'] for point in data_points)  # Total over 30 seconds
         
         # Realistic response times based on traffic
         response_time = 120 + (current_rps * 5)  # Higher traffic = slower response
